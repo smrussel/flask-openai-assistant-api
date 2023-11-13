@@ -15,13 +15,13 @@ To run this project, you will need to add the following environment variables to
 Clone the project
 
 ```bash
-  git clone https://link-to-project
+  git https://github.com/smrussel/flask-openai-assistant-api.git
 ```
 
 Go to the project directory
 
 ```bash
-  cd my-project
+  cd flask-openai-assistant-api
 ```
 
 Install dependencies
