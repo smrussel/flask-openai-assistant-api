@@ -1,6 +1,8 @@
 import json
 import os
+from pathlib import Path
 
+basedir = os.path.abspath(os.path.dirname(__file__))
 
 def create_assistant(client):
     assistant_file_path = "assistant.json"
@@ -12,7 +14,7 @@ def create_assistant(client):
             print("Loaded existing assistant ID.")
     else:
         file = client.files.create(
-            file=open("company-info.docx", "rb"), purpose="assistants"
+            file=Path(os.path.join(basedir,"company-info.docx")), purpose="assistants"
         )
 
         assistant = client.beta.assistants.create(
@@ -20,8 +22,11 @@ def create_assistant(client):
           The assistant, GreenPower Solutions Sales Mentor, has been programmed to assist junior sales representatives in learning company standard operating procedures and effective selling techniques as salespersons.
           A document has been provided with information on GreenPower Solutions' solar sales processes and training details.
           """,
-            model="gpt-4-1106-preview",
-            tools=[{"type": "retrieval"}],
+            model="gpt-3.5-turbo-1106", # or  gpt-4-1106-preview
+            tools=[
+                    # {"type": "code_interpreter"},
+                    {"type": "retrieval"}
+                ],
             file_ids=[file.id],
         )
 
