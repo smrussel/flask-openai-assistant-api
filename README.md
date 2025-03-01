@@ -48,5 +48,5 @@ Start the server
 ![App Screenshot](./photo/frontend-prev-2.png)
 ## License
 
-[MIT](https://choosealicense.com/licenses/mit/)
+[MIT](./LICENSE)
 

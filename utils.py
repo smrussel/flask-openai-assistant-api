@@ -1,20 +1,28 @@
 import json
 import os
-from pathlib import Path
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 def create_assistant(client):
-    assistant_file_path = "assistant.json"
-
+    assistant_file_path = os.path.join(basedir,"assistant.json")
+    # load the existing assistant id from json file
     if os.path.exists(assistant_file_path):
         with open(assistant_file_path, "r") as file:
             assistant_data = json.load(file)
             assistant_id = assistant_data["assistant_id"]
             print("Loaded existing assistant ID.")
     else:
-        file = client.files.create(
-            file=Path(os.path.join(basedir,"company-info.docx")), purpose="assistants"
+        # Create a vector store 
+        vector_store = client.beta.vector_stores.create(name="Company data")
+        
+        # Ready the files for upload to OpenAI
+        file_paths = [os.path.join(basedir,"company-info.docx")]
+        file_streams = [open(path, "rb") for path in file_paths]
+
+        # Use the upload and poll SDK helper to upload the files, add them to the vector store,
+        # and poll the status of the file batch for completion.
+        file_batch = client.beta.vector_stores.file_batches.upload_and_poll(
+            vector_store_id=vector_store.id, files=file_streams
         )
 
         assistant = client.beta.assistants.create(
@@ -25,10 +33,12 @@ def create_assistant(client):
             model="gpt-3.5-turbo-1106", # or  gpt-4-1106-preview
             tools=[
                     # {"type": "code_interpreter"},
-                    {"type": "retrieval"}
+                    {"type": "file_search"}
                 ],
-            file_ids=[file.id],
+            tool_resources={"file_search": {"vector_store_ids": [vector_store.id]}},
         )
+        
+        print(assistant)
 
         with open(assistant_file_path, "w") as file:
             json.dump({"assistant_id": assistant.id}, file)

@@ -12,18 +12,17 @@ load_dotenv()
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
-
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 
-# Init client
+## Init client
 client = OpenAI(api_key=OPENAI_API_KEY)
 
-# Create new assistant or load existing
+## Create new assistant or load existing
 assistant_id = create_assistant(client)
 
 
-# Start conversation thread
+## Start conversation thread
 @app.route("/start", methods=["GET"])
 def start_conversation():
     print("Starting a new conversation...")
@@ -32,7 +31,7 @@ def start_conversation():
     return jsonify({"thread_id": thread.id})
 
 
-# Generate response
+## Generate response
 @app.route("/chat", methods=["POST"])
 @cross_origin(supports_credentials=True)
 def chat():
@@ -76,3 +75,5 @@ def chat():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080)
+
+
